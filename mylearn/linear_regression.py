@@ -1,15 +1,15 @@
-# Собственная реализация логистической регрессии
+# Own implementation of  LogisticRegression
 import time
 import numpy as np
 
 class LogisticRegression:
   def __init__(self,epoch=1000,learning_rate=0.01,learn_method='sgd',stop_rate=0.0001):
-    self.epoch = epoch # здесь храним количество итераций
-    self.learn_method = learn_method # здесь храним тип метода обучения
-    self.learning_rate = learning_rate # здесь храним шаг
-    self.stop_rate = stop_rate # значение, при котором остановить обучение
-    self.learn_func = None # ссылка на функцию обучения
-    self.cost_func = None # ссылка на функцию потерь
+    self.epoch = epoch # number of learning steps
+    self.learn_method = learn_method # keep learn method here
+    self.learning_rate = learning_rate # learning rate
+    self.stop_rate = stop_rate # rate to stop learning
+    self.learn_func = None # reference to learning func
+    self.cost_func = None # fererence to cost func
 
     self.weights = None
     self.epoch_passed = 0
@@ -26,16 +26,15 @@ class LogisticRegression:
     else:
       raise Exception('Unknown learining method: {}'.format(self.learn_method))
 
-
   '''
-    производит начальное инициализирование весов
+    set initial weights
   '''
   def init_weights(self,X):
     #return np.random.randn(X.shape[1], 1);
     return np.zeros((X.shape[1], 1))
 
   '''
-    осуществляет обучение модели
+    learn function
   '''
   def fit(self,X,Y):
     X = self.addones(X)
@@ -51,8 +50,7 @@ class LogisticRegression:
 
 
   '''
-    возвращает отношение количества правильных ответов к общему
-    количеству ответов обученной модели
+    returns prediction score
   '''
   def score(self,X,Y):
     predictions = self.predict(X)
@@ -64,19 +62,19 @@ class LogisticRegression:
     return scores.count(True)/len(scores)
 
   '''
-    возвращает количество прошедших итераций обучения
+    returns count of iterations passed
   '''
   def n_iter(self):
     return self.epoch_passed
 
   '''
-    возвращает время обучения
+    returns learn time
   '''
   def time(self):
     return self.learn_time
 
   '''
-    возвращает список вероятностей ответа на основании признаков
+    returns prediction probabilities
   '''
   def predict_proba(self,X):
     X = self.addones(X)
@@ -84,7 +82,7 @@ class LogisticRegression:
     return self.sigmoid_linear_regression(X,self.weights)
 
   '''
-    предсказывает ответ обученной модели на основании признаков
+    predicts result baased on input
   '''
   def predict(self,X):
     probas = self.predict_proba(X)
@@ -94,13 +92,13 @@ class LogisticRegression:
     return probas
 
   '''
-    добавляет единичный вектор к вектору признаков
+    adds one to features matrix
   '''
   def addones(self,X):
     return np.hstack((np.ones((X.shape[0],1)),X))
 
   '''
-    метод, реализующий стохастический градиентный спуск (SGD)
+    SGD implementation
   '''
   def learn_sgd(self,X,Y,W):
     prev = self.cost_binary_cross_entropy(X,Y,W)
@@ -118,8 +116,7 @@ class LogisticRegression:
     return W
 
   '''
-    метод, реализующий улучшенный градиентный спуск
-    на основе rmsprop
+    RMSPROP implementation
   '''
   def learn_rmsprop(self,X,Y,W):
     prev = self.cost_binary_cross_entropy(X,Y,W)
@@ -147,8 +144,7 @@ class LogisticRegression:
     return W
 
   '''
-    метод, реализующий улучшенный градиентный спуск
-    на основе adam
+    ADAM implementation
   '''
   def learn_adam(self,X,Y,W):
     prev = self.cost_binary_cross_entropy(X,Y,W)
@@ -186,8 +182,7 @@ class LogisticRegression:
     return W
 
   '''
-    метод, реализующий улучшенный градиентный спуск
-    на основе adam
+    NADAM implementation
   '''
   def learn_nadam(self,X,Y,W):
     prev = self.cost_binary_cross_entropy(X,Y,W)
@@ -226,7 +221,7 @@ class LogisticRegression:
 
 
   '''
-    функция бинарной кросс-энтропии (векторная версия)
+    binary cross-entropy
   '''
   def cost_binary_cross_entropy(self,X,Y,W):
     m = X.shape[0]
@@ -236,29 +231,27 @@ class LogisticRegression:
     return total_cost
 
   '''
-    производная от функции бинарной кросс-энтропии (векторная версия)
+    derevative of binary cross entropy
   '''
   def gradient(self, X,Y,W):
     m = X.shape[0]
     return (1 / m) * np.dot(X.T, self.sigmoid_linear_regression(X,W) - Y)
 
   '''
-    главная функция логистической регрессии
+    linear regression passed through sigmoid
   '''
   def sigmoid_linear_regression(self,X,W):
     return self.sigmoid(self.linear_regression(X,W))
 
   '''
-    функция линейной регрессии
+    linear regression
   '''
   def linear_regression(self,X,W):
     return np.dot(X,W)
 
   '''
-    функция сигмоиды (логистическая функция)
+    sigmoid
   '''
   def sigmoid(self,H):
     return 1/(1+np.exp(-H))
-
-
 
