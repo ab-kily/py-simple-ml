@@ -7,6 +7,8 @@ Simple and PURE Logistic Regression implementation with different gradient desce
 - ADAM
 - NADAM
 
+It MUST be used only for educational purposes!
+
 ## How to use?
 
 Install pytorch and pandas libraries:
