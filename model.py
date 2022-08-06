@@ -53,7 +53,7 @@ my_time = my_model.time()
 print("SGD score is: {}".format(my_score))
 print("SGD iter number: {}".format(my_iter))
 print("SGD time: {} sec".format(my_time))
-results.loc[len(results)] = ['MY GD',my_score,my_iter,my_time]
+results.loc[len(results)] = ['GD',my_score,my_iter,my_time]
 
 # Learning using Stochastic Gradient Descent (SGD)
 my_model = LogisticRegression(learn_method='sgd',epoch=2000)
@@ -64,7 +64,7 @@ my_time = my_model.time()
 print("SGD score is: {}".format(my_score))
 print("SGD iter number: {}".format(my_iter))
 print("SGD time: {} sec".format(my_time))
-results.loc[len(results)] = ['MY SGD',my_score,my_iter,my_time]
+results.loc[len(results)] = ['SGD',my_score,my_iter,my_time]
 
 # RMSPROP
 my_model = LogisticRegression(learn_method='rmsprop',epoch=2000)
@@ -75,7 +75,7 @@ my_time = my_model.time()
 print("RMSPROP score is: {}".format(my_score))
 print("RMSPROP iter number: {}".format(my_iter))
 print("RMSPROP time: {} sec".format(my_time))
-results.loc[len(results)] = ['MY RMSPROP',my_score,my_iter,my_time]
+results.loc[len(results)] = ['RMSPROP',my_score,my_iter,my_time]
 
 # ADAM
 my_model = LogisticRegression(learn_method='adam',epoch=2000)
@@ -86,7 +86,7 @@ my_time = my_model.time()
 print("ADAM score is: {}".format(my_score))
 print("ADAM iter number: {}".format(my_iter))
 print("ADAM time: {} sec".format(my_time))
-results.loc[len(results)] = ['MY ADAM',my_score,my_iter,my_time]
+results.loc[len(results)] = ['ADAM',my_score,my_iter,my_time]
 
 # NADAM
 my_model = LogisticRegression(learn_method='nadam',epoch=2000)
@@ -97,6 +97,6 @@ my_time = my_model.time()
 print("NADAM score is: {}".format(my_score))
 print("NADAM iter number: {}".format(my_iter))
 print("NADAM time: {} sec".format(my_time))
-results.loc[len(results)] = ['MY NADAM',my_score,my_iter,my_time]
+results.loc[len(results)] = ['NADAM',my_score,my_iter,my_time]
 
 print(results)
