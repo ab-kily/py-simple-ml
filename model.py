@@ -44,6 +44,17 @@ TRAIN_X, TEST_X, TRAIN_Y, TEST_Y = train_test_split(BASE_X, BASE_Y, test_size = 
 # preparing table to store results
 results = pandas.DataFrame(columns=['Method','Score','Iterations','Time'])
 
+# Learning using Gradient Descent (GD)
+my_model = LogisticRegression(learn_method='gd',epoch=2000)
+my_model.fit(TRAIN_X,TRAIN_Y)
+my_score = my_model.score(TEST_X,TEST_Y)
+my_iter = my_model.n_iter()
+my_time = my_model.time()
+print("SGD score is: {}".format(my_score))
+print("SGD iter number: {}".format(my_iter))
+print("SGD time: {} sec".format(my_time))
+results.loc[len(results)] = ['MY GD',my_score,my_iter,my_time]
+
 # Learning using Stochastic Gradient Descent (SGD)
 my_model = LogisticRegression(learn_method='sgd',epoch=2000)
 my_model.fit(TRAIN_X,TRAIN_Y)

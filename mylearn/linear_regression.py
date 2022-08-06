@@ -3,7 +3,7 @@ import time
 import numpy as np
 
 class LogisticRegression:
-  def __init__(self,epoch=1000,learning_rate=0.01,learn_method='sgd',stop_rate=0.0001):
+  def __init__(self,epoch=1000,learning_rate=0.01,learn_method='gd',stop_rate=0.0001):
     self.epoch = epoch # number of learning steps
     self.learn_method = learn_method # keep learn method here
     self.learning_rate = learning_rate # learning rate
@@ -98,15 +98,38 @@ class LogisticRegression:
     return np.hstack((np.ones((X.shape[0],1)),X))
 
   '''
-    SGD implementation
+    GD implementation
   '''
-  def learn_sgd(self,X,Y,W):
+  def learn_gd(self,X,Y,W):
     prev = self.cost_binary_cross_entropy(X,Y,W)
     for enum in range(self.epoch):
       self.epoch_passed = enum+1
       gradients = self.gradient(X,Y,W)
       W = W-self.learning_rate*gradients
       actual = self.cost_binary_cross_entropy(X,Y,W)
+      diff = abs(prev - actual)
+      if(diff <= self.stop_rate):
+        break
+      prev = actual
+
+    self.weights = W
+    return W
+
+  '''
+    SGD implementation
+  '''
+  def learn_sgd(self,X,Y,W):
+    n = len(Y)
+    indices = np.random.choice(range(0,n-1),size=int(0.1*n))
+    X_SUBSET = np.array([X[i] for i in indices])
+    Y_SUBSET = np.array([Y[i] for i in indices])
+
+    prev = self.cost_binary_cross_entropy(X_SUBSET,Y_SUBSET,W)
+    for enum in range(self.epoch):
+      self.epoch_passed = enum+1
+      gradients = self.gradient(X_SUBSET,Y_SUBSET,W)
+      W = W-self.learning_rate*gradients
+      actual = self.cost_binary_cross_entropy(X_SUBSET,Y_SUBSET,W)
       diff = abs(prev - actual)
       if(diff <= self.stop_rate):
         break
