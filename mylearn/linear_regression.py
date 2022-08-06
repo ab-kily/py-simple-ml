@@ -15,7 +15,9 @@ class LogisticRegression:
     self.epoch_passed = 0
     self.learn_time = 0
 
-    if(self.learn_method == 'sgd'):
+    if(self.learn_method == 'gd'):
+      self.learn_func = self.learn_gd
+    elif(self.learn_method == 'sgd'):
       self.learn_func = self.learn_sgd
     elif(self.learn_method == 'rmsprop'):
       self.learn_func = self.learn_rmsprop
