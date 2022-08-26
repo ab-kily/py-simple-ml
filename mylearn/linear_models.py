@@ -2,21 +2,40 @@
 import time
 import numpy as np
 
+from .tools import addones
+from .gd_implementation import learn_base_gd
+from .linear_implementation import linear_regression_matrix
+from .linear_implementation import linear_regression_iterable
+from .loss_implementation import binary_cross_entropy_matrix
+from .loss_implementation import binary_cross_entropy_derivative_matrix
+from .loss_implementation import binary_cross_entropy_iterable
+from .loss_implementation import binary_cross_entropy_derivative_iterable
+
 class LogisticRegression:
-  def __init__(self,epoch=1000,learning_rate=0.01,learn_method='gd',stop_rate=0.0001):
+  def __init__(self,epoch=1000,learning_rate=0.01,learn_method='base_gd_matrix',stop_rate=0.0001):
     self.epoch = epoch # number of learning steps
     self.learn_method = learn_method # keep learn method here
     self.learning_rate = learning_rate # learning rate
     self.stop_rate = stop_rate # rate to stop learning
     self.learn_func = None # reference to learning func
-    self.cost_func = None # fererence to cost func
+    self.linear_func = None # reference to linear func
+    self.loss_func = None # reference to loss function
+    self.derivative_func = None # reference to derivative of loss function
 
     self.weights = None
     self.epoch_passed = 0
     self.learn_time = 0
 
-    if(self.learn_method == 'gd'):
-      self.learn_func = self.learn_gd
+    if(self.learn_method == 'base_gd_matrix'):
+      self.learn_func = learn_base_gd
+      self.linear_func = lambda X,W: self.sigmoid(linear_regression_matrix(X,W))
+      self.loss_func = binary_cross_entropy_matrix
+      self.derivative_func = binary_cross_entropy_derivative_matrix
+    elif(self.learn_method == 'base_gd_iterable'):
+      self.learn_func = learn_base_gd
+      self.linear_func = lambda X,W: self.sigmoid(linear_regression_iterable(X,W))
+      self.loss_func = binary_cross_entropy_iterable
+      self.derivative_func = binary_cross_entropy_derivative_iterable
     elif(self.learn_method == 'sgd'):
       self.learn_func = self.learn_sgd
     elif(self.learn_method == 'rmsprop'):
@@ -29,25 +48,21 @@ class LogisticRegression:
       raise Exception('Unknown learining method: {}'.format(self.learn_method))
 
   '''
-    set initial weights
-  '''
-  def init_weights(self,X):
-    #return np.random.randn(X.shape[1], 1);
-    return np.zeros((X.shape[1], 1))
-
-  '''
     learn function
   '''
   def fit(self,X,Y):
-    X = self.addones(X)
-    Y = np.reshape(Y, (len(Y), 1))
-    W = self.init_weights(X)
-
     self.epoch_passed = 0
     self.learn_time = 0
 
     start = time.perf_counter()
-    self.learn_func(X,Y,W)
+    self.weights, self.epoch_passed = self.learn_func(
+        X=X,Y=Y,
+        n_epoch=self.epoch,
+        learn_rate=self.learning_rate,
+        stop_rate=self.stop_rate,
+        linear_func=self.linear_func,
+        loss_func=self.loss_func,
+        derivative_func=self.derivative_func)
     self.learn_time = time.perf_counter() - start
 
 
@@ -79,9 +94,7 @@ class LogisticRegression:
     returns prediction probabilities
   '''
   def predict_proba(self,X):
-    X = self.addones(X)
-
-    return self.sigmoid_linear_regression(X,self.weights)
+    return self.linear_func(X,self.weights)
 
   '''
     predicts result baased on input
@@ -93,29 +106,6 @@ class LogisticRegression:
 
     return probas
 
-  '''
-    adds one to features matrix
-  '''
-  def addones(self,X):
-    return np.hstack((np.ones((X.shape[0],1)),X))
-
-  '''
-    GD implementation
-  '''
-  def learn_gd(self,X,Y,W):
-    prev = self.cost_binary_cross_entropy(X,Y,W)
-    for enum in range(self.epoch):
-      self.epoch_passed = enum+1
-      gradients = self.gradient(X,Y,W)
-      W = W-self.learning_rate*gradients
-      actual = self.cost_binary_cross_entropy(X,Y,W)
-      diff = abs(prev - actual)
-      if(diff <= self.stop_rate):
-        break
-      prev = actual
-
-    self.weights = W
-    return W
 
   '''
     SGD implementation
@@ -244,35 +234,11 @@ class LogisticRegression:
     self.weights = W
     return W
 
-
-  '''
-    binary cross-entropy
-  '''
-  def cost_binary_cross_entropy(self,X,Y,W):
-    m = X.shape[0]
-    total_cost = -(1 / m) * np.sum(
-        Y * np.log(self.sigmoid_linear_regression(X, W)) + (1 - Y) * np.log(
-            1 - self.sigmoid_linear_regression(X, W)))
-    return total_cost
-
-  '''
-    derevative of binary cross entropy
-  '''
-  def gradient(self, X,Y,W):
-    m = X.shape[0]
-    return (1 / m) * np.dot(X.T, self.sigmoid_linear_regression(X,W) - Y)
-
   '''
     linear regression passed through sigmoid
   '''
   def sigmoid_linear_regression(self,X,W):
-    return self.sigmoid(self.linear_regression(X,W))
-
-  '''
-    linear regression
-  '''
-  def linear_regression(self,X,W):
-    return np.dot(X,W)
+    return self.sigmoid(linear_regression_iterable(X,W))
 
   '''
     sigmoid
