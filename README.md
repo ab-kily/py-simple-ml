@@ -1,8 +1,17 @@
-py-logistic-regression
+py-simple-ml
 ======================
 
-Simple and PURE Logistic Regression implementation with different gradient descent implementations:
-- SGD
+Simple and PURE implementations of different kind of classic ML algorithms.
+
+Linear algorithms:
+-----------------
+- Linear Regression
+- Logistic Regression
+
+Gradient descent algorithms:
+----------------------------
+- Classic GD
+- Stochastic GD (SGD)
 - RMSPROP
 - ADAM
 - NADAM
