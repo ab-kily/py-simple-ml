@@ -24,7 +24,5 @@ def learn_base_gd(X, Y, n_epoch: int, learn_rate: float, stop_rate: float, linea
         gradients = derivative_func(X,Y,Y_predicted)
         W = W-learn_rate*gradients
 
-    print(gradients)
-    print(W)
     return W, epoch_passed
 
